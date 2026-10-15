@@ -5,6 +5,9 @@ on:
   push:
     tags: ['v*']
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-14   # Apple Silicon runner
@@ -15,9 +18,26 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Build Voice Enhancer.app (arm64)
-        run: npx electron-builder --mac zip --arm64 --publish never
+      - name: Build Voice Enhancer (dmg + zip, arm64)
+        run: npx electron-builder --mac dmg zip --arm64 --publish never
+      - name: Smoke-test bundled ffmpeg
+        run: |
+          APP="dist/mac-arm64/Voice Enhancer.app"
+          FF="$APP/Contents/Resources/app.asar.unpacked/node_modules/ffmpeg-static/ffmpeg"
+          "$FF" -hide_banner -filters | grep -E " (arnndn|deesser|loudnorm) "
+          "$FF" -hide_banner -encoders | grep libmp3lame
+          ls -la "$APP/Contents/Resources/voice-denoise.rnnn"
+          codesign -dv "$APP" 2>&1 | head -5
       - uses: actions/upload-artifact@v4
         with:
           name: Voice-Enhancer-mac-arm64
-          path: dist/*.zip
+          path: |
+            dist/*.dmg
+            dist/*.zip
+      - name: Attach to release (tag builds)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.dmg
+            dist/*.zip
