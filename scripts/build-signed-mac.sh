@@ -64,6 +64,7 @@ codesign -dv "$APP" 2>&1 | grep -E "Authority|TeamIdentifier|Runtime" | head -5
 spctl -a -vv "$APP" 2>&1 | head -3 || true
 
 echo "== Installing to /Applications =="
+osascript -e 'quit app "Voice Enhancer"' >/dev/null 2>&1; sleep 1
 rm -rf "/Applications/Voice Enhancer.app"
 cp -R "$APP" /Applications/ || fail "copy to /Applications"
 open "/Applications/Voice Enhancer.app"
