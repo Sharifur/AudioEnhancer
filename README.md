@@ -28,6 +28,18 @@ To run without installing: `npm start`.
 
 **Prefer not to build locally?** Open the repo's **Actions** tab → *Build macOS app* → *Run workflow*, then download the `Voice-Enhancer-mac-arm64` zip from the finished run. Unzip, drag the app to Applications, and right-click → **Open** the first time (it isn't signed with an Apple developer ID).
 
+## Signed build with your Apple certificate
+
+Double-click **Build Signed App.command** (or run `./scripts/build-signed-mac.sh`). It:
+
+1. Finds your code-signing certificate in the keychain (prefers *Developer ID Application*, falls back to *Apple Development*).
+2. Builds the app with the hardened runtime and microphone entitlement, signed with that certificate.
+3. Notarizes it if you've saved a notary profile once:
+   `xcrun notarytool store-credentials VoiceEnhancer --apple-id you@example.com --team-id TEAMID`
+4. Verifies the signature, installs to `/Applications` and opens it. A signed `.dmg` for sharing lands in `dist/`.
+
+macOS may ask whether `codesign` can use your key; click **Always Allow**. Output is logged to `build-signed.log`.
+
 ## The sound chain
 
 Every file goes through the same fixed chain (bundled ffmpeg, so results don't depend on what's installed on your Mac):
