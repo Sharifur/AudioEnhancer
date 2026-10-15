@@ -1,0 +1,41 @@
+{
+  "name": "voice-enhancer",
+  "productName": "Voice Enhancer",
+  "version": "1.0.0",
+  "description": "Record or drop a voice file and get a clean, professional voiceover. Same sound every time.",
+  "author": "Sharifur Rahman",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac dir --arm64",
+    "install-app": "npm run build && rm -rf \"/Applications/Voice Enhancer.app\" && cp -R \"dist/mac-arm64/Voice Enhancer.app\" /Applications/ && echo 'Installed to /Applications/Voice Enhancer.app'",
+    "test": "node test/engine.test.js"
+  },
+  "dependencies": {
+    "ffmpeg-static": "5.2.0"
+  },
+  "devDependencies": {
+    "electron": "38.2.0",
+    "electron-builder": "26.0.12"
+  },
+  "build": {
+    "appId": "com.xgenious.voiceenhancer",
+    "productName": "Voice Enhancer",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["src/**/*", "package.json"],
+    "asarUnpack": ["node_modules/ffmpeg-static/**"],
+    "extraResources": [{ "from": "resources/voice-denoise.rnnn", "to": "voice-denoise.rnnn" }],
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "build/icon.png",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Voice Enhancer records your voice so it can clean it up into professional audio."
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self' file: blob:; worker-src 'self' blob:">
+<title>Voice Enhancer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="titlebar">
+    <div class="brand"><span class="logo" aria-hidden="true"></span>Voice Enhancer</div>
+  </header>
+
+  <main>
+    <!-- Output folder -->
+    <section class="folder card">
+      <div class="folder-info">
+        <div class="label">Saving to</div>
+        <div class="path" id="outPath">…</div>
+      </div>
+      <button class="btn ghost" id="openFolder">Open</button>
+      <button class="btn" id="changeFolder">Change…</button>
+    </section>
+
+    <div id="ffmpegWarn" class="warn" hidden>
+      ffmpeg wasn't found. Run <code>npm install</code> in the app folder, or <code>brew install ffmpeg</code>, then restart the app.
+    </div>
+
+    <!-- Recorder -->
+    <section class="recorder card">
+      <button class="rec-btn" id="recBtn" aria-label="Start recording"><span></span></button>
+      <div class="rec-body">
+        <div class="rec-top">
+          <div class="rec-title" id="recTitle">Record your voice</div>
+          <div class="timer" id="timer">00:00</div>
+        </div>
+        <div class="meter"><div class="meter-fill" id="meter"></div></div>
+        <div class="rec-bottom">
+          <select id="micSelect" aria-label="Microphone"></select>
+          <button class="btn ghost small" id="discardBtn" hidden>Discard</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Drop zone -->
+    <section class="drop" id="drop" tabindex="0">
+      <div class="drop-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+      </div>
+      <div><strong>Drop audio or video files</strong> here, or <u>choose files</u></div>
+      <div class="hint">wav · mp3 · m4a · flac · aiff · mp4 · mov · folders too</div>
+    </section>
+
+    <!-- Jobs -->
+    <section class="jobs" id="jobs"></section>
+    <div class="empty" id="empty">Your enhanced recordings will appear here.</div>
+  </main>
+
+  <!-- Settings -->
+  <footer class="settings">
+    <label class="field">
+      <span>Noise removal</span>
+      <input type="range" id="denoise" min="0.5" max="1" step="0.05">
+      <output id="denoiseVal"></output>
+    </label>
+    <label class="field">
+      <span>Loudness</span>
+      <select id="lufs">
+        <option value="-16">-16 LUFS · YouTube / Podcast</option>
+        <option value="-14">-14 LUFS · Social / Reels</option>
+        <option value="-19">-19 LUFS · Quiet / Broadcast</option>
+      </select>
+    </label>
+    <label class="check"><input type="checkbox" id="keepRaw"> Keep raw recordings</label>
+    <label class="check"><input type="checkbox" id="makeMp3"> Also save MP3</label>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
