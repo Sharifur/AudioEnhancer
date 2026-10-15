@@ -3,6 +3,7 @@ name: Build macOS app
 on:
   workflow_dispatch:
   push:
+    branches: [release]   # push main -> release to get a fresh build
     tags: ['v*']
 
 permissions:
