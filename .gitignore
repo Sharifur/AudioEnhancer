@@ -4,3 +4,5 @@ dist/
 *.log
 install.log
 build-signed.log
+__pycache__/
+*.pyc
