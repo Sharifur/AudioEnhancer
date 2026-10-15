@@ -10,6 +10,6 @@ contextBridge.exposeInMainWorld('api', {
   reveal: (p) => ipcRenderer.invoke('reveal', p),
   recStart: (sampleRate) => ipcRenderer.invoke('rec:start', { sampleRate }),
   recChunk: (float32) => ipcRenderer.send('rec:chunk', float32.buffer),
-  recStop: (discard) => ipcRenderer.invoke('rec:stop', { discard }),
+  recStop: (discard, name) => ipcRenderer.invoke('rec:stop', { discard, name }),
   onJob: (cb) => ipcRenderer.on('job', (_e, j) => cb(j)),
 });

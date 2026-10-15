@@ -2,7 +2,7 @@
 
 A macOS app that turns raw voice into clean, professional voiceover audio with the **exact same sound every time**.
 
-- **Record** right in the app. When you stop, it saves your take and enhances it automatically.
+- **Record** right in the app. Optionally name the take (e.g. "Taskip intro"); when you stop, it saves it under that name and enhances it automatically.
 - **Drop** audio or video files (or whole folders) onto the window.
 - **Before / After** player on every result.
 - Everything is saved to **one output folder you choose** (remembered between launches).

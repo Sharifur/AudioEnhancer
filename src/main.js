@@ -167,12 +167,31 @@ ipcMain.on('rec:chunk', (_e, ab) => {
   fs.writeSync(rec.fd, out);
   rec.bytes += out.length;
 });
-ipcMain.handle('rec:stop', (_e, { discard } = {}) => {
+// Turn a user-typed name into a safe macOS file name ("" if nothing usable).
+function safeName(name) {
+  return String(name || '')
+    .replace(/[\/\\:*?"<>|\u0000-\u001f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/^[.\s]+|[.\s]+$/g, '')
+    .slice(0, 100);
+}
+function uniqueFile(dir, base, ext) {
+  let p = path.join(dir, `${base}${ext}`);
+  for (let i = 2; fs.existsSync(p); i++) p = path.join(dir, `${base} (${i})${ext}`);
+  return p;
+}
+
+ipcMain.handle('rec:stop', (_e, { discard, name } = {}) => {
   if (!rec) return null;
-  const { fd, file, bytes, sampleRate } = rec; rec = null;
+  let { fd, file, bytes, sampleRate } = rec; rec = null;
   fs.writeSync(fd, wavHeader(bytes, sampleRate), 0, 44, 0);
   fs.closeSync(fd);
   if (discard || bytes < sampleRate * 3 * 0.3) { fs.rmSync(file, { force: true }); return null; } // < 0.3 s
+  const wanted = safeName(name);
+  if (wanted) {
+    const renamed = uniqueFile(path.dirname(file), wanted, '.wav');
+    try { fs.renameSync(file, renamed); file = renamed; } catch { /* keep timestamp name */ }
+  }
   return addJob(file, { source: 'recording', removeAfter: !settings.keepRaw });
 });
 

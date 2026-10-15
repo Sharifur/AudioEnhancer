@@ -102,7 +102,8 @@ async function stopRec(discard = false) {
   clearInterval(r.timer);
   r.stream.getTracks().forEach(t => t.stop());
   r.ctx.close();
-  await window.api.recStop(discard);
+  await window.api.recStop(discard, $('recName').value.trim());
+  $('recName').value = '';
   document.body.classList.remove('recording');
   $('recBtn').classList.remove('on'); $('recBtn').setAttribute('aria-label', 'Start recording');
   $('recTitle').textContent = discard ? 'Recording discarded' : 'Saved. Enhancing…';
@@ -114,6 +115,7 @@ async function stopRec(discard = false) {
 }
 $('recBtn').onclick = () => (R ? stopRec() : startRec());
 $('discardBtn').onclick = () => stopRec(true);
+$('recName').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'r') { e.preventDefault(); R ? stopRec() : startRec(); }
 });
