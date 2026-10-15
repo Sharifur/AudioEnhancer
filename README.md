@@ -22,6 +22,8 @@ npm run install-app      # builds "Voice Enhancer.app" and copies it to /Applica
 
 Then open **Voice Enhancer** from Launchpad or Spotlight. The first time you record, macOS asks for microphone access: click **Allow**.
 
+**Easiest:** double-click `Install Voice Enhancer.command` in Finder. It installs Node.js via Homebrew if needed, builds the app, copies it to Applications and opens it. Progress is saved to `install.log`.
+
 To run without installing: `npm start`.
 
 **Prefer not to build locally?** Open the repo's **Actions** tab → *Build macOS app* → *Run workflow*, then download the `Voice-Enhancer-mac-arm64` zip from the finished run. Unzip, drag the app to Applications, and right-click → **Open** the first time (it isn't signed with an Apple developer ID).
