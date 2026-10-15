@@ -1,0 +1,40 @@
+name: Fetch reference voice samples (DAPS)
+
+# Downloads a few clips from the DAPS dataset (Mysore 2015, CC BY-NC 4.0) so the
+# enhancer can be benchmarked against professionally produced speech.
+# Clips are stored in a DRAFT release (not public). Trigger: push to branch "reference".
+on:
+  workflow_dispatch:
+  push:
+    branches: [reference]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and extract selected clips
+        run: |
+          set -e
+          sudo apt-get update -qq && sudo apt-get install -y -qq flac >/dev/null
+          PATS=()
+          for s in f1 m1 f3 m3; do
+            for v in clean produced ipad_office1 iphone_livingroom1 ipad_confroom1; do PATS+=("*/${s}_script1_${v}.wav"); done
+          done
+          mkdir -p x out
+          curl -sSL --retry 3 https://zenodo.org/record/4660670/files/daps.tar.gz \
+            | tar -xz -C x --wildcards --no-anchored "${PATS[@]}" || true
+          find x -name '*.wav' | sort
+          for f in $(find x -name '*.wav'); do flac -s --best -o "out/$(basename "${f%.wav}").flac" "$f"; done
+          ls -la out
+          [ "$(ls out/*.flac | wc -l)" -ge 10 ] || { echo "too few files extracted"; exit 1; }
+          echo "Source: DAPS dataset, G. J. Mysore, 'Can we automatically transform speech recorded on common consumer devices in real-world environments into professional production quality speech?', IEEE SPL 2015. https://zenodo.org/record/4660670 (CC BY-NC 4.0)" > out/SOURCE.txt
+      - name: Store in a draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: reference-daps
+          name: Reference samples (DAPS, private draft)
+          draft: true
+          files: out/*
